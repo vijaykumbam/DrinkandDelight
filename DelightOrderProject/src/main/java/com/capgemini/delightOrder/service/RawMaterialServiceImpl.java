@@ -1,77 +1,57 @@
 package com.capgemini.delightOrder.service;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.StringTokenizer;
-
 import com.capgemini.delightOrder.dao.RawMaterialStockDao;
 import com.capgemini.delightOrder.dto.RawMaterialStockBean;
+import com.capgemini.delightOrder.exception.InvalidDateException;
 import com.capgemini.delightOrder.exception.RawMaterialException;
 
 public class RawMaterialServiceImpl implements RawMaterialService
 {
-	RawMaterialStockDao ps=new RawMaterialStockDao();
+	RawMaterialStockDao rawMaterialDaoRef=new RawMaterialStockDao(); //object
 	
+	//..........tested...................
+		public boolean doesRawMaterialOrderIdExist(String orderId)
+		{	 
+			try 
+			{ 
+				return  rawMaterialDaoRef.doesRawMaterialOrderIdExist(orderId);
+			}
+			catch (RawMaterialException e)
+			{
+				//e.printStackTrace();
+				 e.getMessage();
+			}
+		    return false; 
+		}
+		
 	
-	public RawMaterialStockBean trackProductOrder(String orderId) 
+	//..............Partially Tested.........
+	public RawMaterialStockBean trackRawMaterialOrder(String orderId) 
 	{
-    try
-    {
-    	  if(doesRawMaterialOrderIdExist(orderId))
-    		  
-    		  return ps.trackRawMaterialOrder(orderId);
-    	  else
-    		 throw new RawMaterialException("No OrderId Exist");
-      }
-      catch(RawMaterialException e)
-    {
-    	 System.out.println(e);
-    }
+	    	try
+	    	{
+	    	  if(doesRawMaterialOrderIdExist(orderId))
+	    		  return rawMaterialDaoRef.trackRawMaterialOrder(orderId);
+	    	  else
+	    		 throw new RawMaterialException("No OrderId Exist");
+	      }
+	      catch(RawMaterialException e)
+		    {
+		    	 e.getMessage();
+		    }
     return null;
 	}
+	 
 	
 	
-	public boolean doesRawMaterialOrderIdExist(String orderId)
-	{	 
-		try
-		{
-			return  ps.doesRawMaterialOrderIdExist(orderId);
-		} 
-		catch (RawMaterialException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    return false;
-	}
-	
-	
+	//..............should do...............
 	public boolean processDateCheck(Date processDate)
 	{
-      if(processDate==null)
-      {
-		return false;
-      }
-//      Date date = Calendar.getInstance().getTime();  
-//      DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");  
-//      String str = "1234";
-//      int inum = Integer.parseInt(str);
-//      String strDate = dateFormat.format(date);  
-      
-      Date date1 = processDate;
-      DateFormat dateFormat = new SimpleDateFormat("dd/MM/YYYY");
-      String strdate = dateFormat.format(date1);
-      
-      StringTokenizer str = new StringTokenizer(strdate+"/");
-      while(str.hasMoreTokens())
-      {
-    	  String day =str.nextToken();
-    	  String month =str.nextToken();
-    	  String year = str.nextToken();
-      }
-      
-
+		//DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		//String strDate = dateFormat.format(processDate);
       SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
       String Date=new SimpleDateFormat("dd/MM/yyyy").format(processDate);
       sdf.setLenient(false);
@@ -89,26 +69,20 @@ public class RawMaterialServiceImpl implements RawMaterialService
 	}
 	
 	
-	
+	//...................should do.....................
 	public String updateExitDateinStock(String orderId,Date exitDate) {
 		// TODO Auto-generated method stub
 		if(processDateCheck(exitDate))	
 		{
-			return ps.updateProcessDateinStock(orderId,exitDate);
+			return rawMaterialDaoRef.updateProcessDateinStock(orderId,exitDate);
 		  
 		}
 		else 
 			return "null";
 	}
-	
-	
-	public boolean validateManfacturingDate(Date manufacturing_date) {
-		// TODO Auto-generated method stub
-		if(manufacturing_date==null)
-	      {
-			return false;
-	      }
-
+	//....................................................................
+	public boolean validateManfacturingDate(Date manufacturing_date) 
+	{
 	      SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	      String Date=new SimpleDateFormat("dd/MM/yyyy").format(manufacturing_date);
 	      sdf.setLenient(false);
@@ -118,21 +92,25 @@ public class RawMaterialServiceImpl implements RawMaterialService
 			
 			} catch (ParseException e) 
 	      {
-				
-				e.printStackTrace();
+				 e.getMessage();
+				//e.printStackTrace();
 				return false;
 			}	
 			return true;
 			
 	}
-	public boolean validateProcessDate(Date manufacturing_date, Date expiry_date) {
+	
+	
+	
+	public boolean validateProcessDate(Date manufacturing_date, Date expiry_date) 
+	{
 		if(manufacturing_date==null || expiry_date==null)
 	      {
 			return false;
 	      }
 	      SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	      String Date1=new SimpleDateFormat("dd/MM/yyyy").format(manufacturing_date);
-	      String Date2=new SimpleDateFormat("dd/MM/yyyy").format(manufacturing_date);
+	      String Date2=new SimpleDateFormat("dd/MM/yyyy").format(expiry_date);
 	      sdf.setLenient(false);
 	      try 
 	      {
@@ -156,48 +134,65 @@ public class RawMaterialServiceImpl implements RawMaterialService
 				throw new RawMaterialException("No OrderId Exist");
 			}
    	        }
-	    	  catch(RawMaterialException e)
-	    	    {
-	    	    	 System.out.println(e);
-	    	    	 return false;
-	    	    }
+	    	 catch(RawMaterialException e)
+	    	   {
+	    	   	 //System.out.println(e);
+	    	   	 return false;
+	    	   }
 		
+	} 
+	
+	 
+	public String updateRawMaterialStock(String orderId,Date manufacturing_date,Date expiry_date,String qualityCheck) throws RawMaterialException
+	{	
+		if(validateManfacturingDate(manufacturing_date)&&validateProcessDate(manufacturing_date,expiry_date))
+		{
+			return rawMaterialDaoRef.updateRawMaterialStock(orderId,manufacturing_date, expiry_date, qualityCheck);
+		}
+		else
+		{
+			return null;
+		}
 	}
 	
 	
-	public String updateRawMaterialStock(String orderId,Date manufacturing_date,Date expiry_date,String qualityCheck)
-	{
-		//if(validateManfacturingDate( manufacturing_date) && validateExpiryDate( manufacturing_date,expiry_date))	
-		
-				return ps.updateRawMaterialStock(orderId,manufacturing_date, expiry_date, qualityCheck);
-		
-		
-	}
-	public boolean doesRawMaterialOrderIdExistInStock(String orderId) {
+	//----------------tested----------------
+	public boolean doesRawMaterialOrderIdExistInStock(String orderId)
+	{ 
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	
-	
-	
 
-	public RawMaterialStockBean trackRawMaterialOrder(String orderId) {
-		// TODO Auto-generated method stub
-		return null;
+//...............currently.............
+	public String updateProcessDateinStock(String orderId, Date processDate) 
+	{
+		if(doesRawMaterialOrderIdExist(orderId))
+		{
+			return rawMaterialDaoRef.updateProcessDateinStock(orderId, processDate);
+		}
+		else
+		return "OrderId is not valid try to enter the correct OrderId";
+		
 	}
 
-
-	public String updateProcessDateinStock(String orderId, Date processDate) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	//..........tested...................
+	public String validateProcessDate(int day, int month, int year) throws InvalidDateException 
+	{
+		String processDate = null;
+		if((day<=31 && day>=1)&&(month<=12 &&month>=1)&&(year<=2030 &&year>=2010))
+		{
+			String dd= String.format("%02d", day);
+			String MM= String.format("%02d", month);
+			String yyyy= String.valueOf(year);
+			processDate = dd+"/"+MM+"/"+yyyy;
+		}
+		else
+		{
+			throw new InvalidDateException("Invalid date try to enter the correct format");
+		}
+		return processDate;
 	}
-	
-//	public boolean exitDateCheck(Date exitDate) {
-//		// TODO Auto-generated method stub
-//		return false;
-//	}
-	
-	 
-	 
+		 
 }

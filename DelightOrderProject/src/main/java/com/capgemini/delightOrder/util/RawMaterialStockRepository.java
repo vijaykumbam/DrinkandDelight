@@ -9,14 +9,14 @@ import com.capgemini.delightOrder.dto.RawMaterialStockBean;
 public class RawMaterialStockRepository
 {
 
- Map<String, RawMaterialStockBean> RawMaterialStocklist=new HashMap<String,RawMaterialStockBean>();
+ public static Map<String, RawMaterialStockBean> RawMaterialStocklist=new HashMap<String,RawMaterialStockBean>();
  
-public void setRawMaterialStocklist(Map<String, RawMaterialStockBean> RawMaterialStocklist)
+public static void setRawMaterialStocklist(Map<String, RawMaterialStockBean> RawMaterialStocklist)
 {
-	this.RawMaterialStocklist = RawMaterialStocklist;
+	RawMaterialStockRepository.RawMaterialStocklist = RawMaterialStocklist;
 }
 
-	public Map<String,RawMaterialStockBean> getRawMaterialStocklist() 
+	public static Map<String,RawMaterialStockBean> getRawMaterialStocklist() 
 	{
 		return RawMaterialStocklist;
 	}

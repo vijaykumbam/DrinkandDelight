@@ -9,18 +9,20 @@ import com.capgemini.delightOrder.exception.RawMaterialException;
 import com.capgemini.delightOrder.util.*;
 
 public class RawMaterialStockDao 
-{
+{ 
     RawMaterialStockRepository RawMaterialStockRepository=new RawMaterialStockRepository();
     
-     Map<String, RawMaterialStockBean> Rawmateriallist = RawMaterialStockRepository.getRawMaterialStocklist();
-     
+     Map<String, RawMaterialStockBean> Rawmateriallist = com.capgemini.delightOrder.util.RawMaterialStockRepository.getRawMaterialStocklist();
+      
+      
+     //This method return the bean details..................
 	 public RawMaterialStockBean trackRawMaterialOrder(String orderId)throws RawMaterialException
 	 {
    		    return Rawmateriallist.get(orderId); 
 	 }
 	 
-	 
-	 
+	 //....................tested................
+	 //This will check the rawMaterialId id exist or not and return to parent method
 	 public boolean doesRawMaterialOrderIdExist(String orderId) throws RawMaterialException
 	 {
 	 
@@ -33,22 +35,23 @@ public class RawMaterialStockDao
 		 }
 		 return false;
 		 
-	 }
+	 } 
+	 
+	 //-----------------Tested----------------
 	 public String updateProcessDateinStock(String orderId,Date processDate) 
 	 {
 		 for (Entry<String,RawMaterialStockBean> mp:Rawmateriallist.entrySet()) 
 		 {
 			 if (mp.getValue().getOrderId().equals(orderId))
 			 {
-	           mp.getValue().setExitDate(processDate);      
-             }
-			 
+	           mp.getValue().setProcessDate(processDate);      
+             } 
 		 }
-		 return "Data Inserted";
+		 return "ProcessData is Successfully Updated";
 	 }
-	 
-	 
-	 public String updateRawMaterialStock(String orderId,Date manufacturing_date,Date expiry_date,String qualityCheck)
+	   
+	 //.............TESTED.................
+	 public String updateRawMaterialStock(String orderId,Date manufacturing_date,Date expiry_date,String qualityCheck) throws RawMaterialException
 	 { 
 		 for (Entry<String , RawMaterialStockBean> mp:Rawmateriallist.entrySet()) 
 		 {
@@ -59,6 +62,6 @@ public class RawMaterialStockDao
 	           mp.getValue().setQualityCheck(qualityCheck);
 			 }
 		 }
-		 return "Data Inserted";
+		 return "Dates were successfully updated";
 	 }
 }
